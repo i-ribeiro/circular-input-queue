@@ -4,7 +4,7 @@
 
 Student: Isaac Ribeiro\
 Professor: David Houtman\
-Submission: 03/Jun/2022\
+Submission: 24/Jun/2022\
 Course: CST8234 C Language\
 Program: [Computer Engineering Technology: Computing Science](https://www.algonquincollege.com/coop/coop-entry/computer-engineering-technology-computing-science/)
 
@@ -14,7 +14,12 @@ A simple implementation of the circular queue data structure to perform a runnin
 
 The assignment required a solution with the fewest lines of code without sacrificing readability. 
 
-I used Visual Studio Code with WSL and GCC to complete this assignment. 
+I used Visual Studio Code with WSL and GCC to complete this assignment.
+
+## RELEASES
+
+`v1.0.0` represents the initial version graded for the "Lab 2" assignment.\
+`v1.1.0` represents the version graded for the "Lab 4" assignment, which is based on the "Lab 2" submission (v1.0.0).
 
 ## COMPATIBILITY
 
