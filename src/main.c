@@ -7,6 +7,7 @@
 /**** INCLUDES ****/
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 /**** DEFINES ****/
 #define BUFSZ 10
@@ -14,49 +15,50 @@
 /**** MAIN ****/
 int main(void)
 {
+	int buffer[BUFSZ] = {0};					// buffer of entered values
+	int sum = 0;								// sum of values within the rolling average frame
+	int frameWidth = 0;							// width of the rolling average frame, does not change
+	int i = 0;									// total number of values entered
+	unsigned sumOver;							// the width of the average frame, expands with i until frameWidth
 
-	int buffer[BUFSZ] = {0};
-
-	int sum = 0;
-	int frameWidth = 0;
-	int i = 0;
-
+	/* prompt frame width */
 	printf("Enter the number of values to be averaged over (N): ");
 	scanf("%d", &frameWidth);
 
-	while (1) {
+	int* new = buffer;							// pointer to new value
+	int* old = buffer + BUFSZ - frameWidth;		// pointer to the value that has moved out of the frame
 
-		/* calculate indices */
-		unsigned short bAdvanceFrame = i >= frameWidth;			// should the frame advance with the new index or expand?
-		unsigned newIndex = i % BUFSZ;
-		unsigned oldIndex = (i - frameWidth) % BUFSZ;
+	/* loop until Ctrl+C */
+	while (1)
+	{
+		/* ensure pointers are in range */
+		assert(0 > (new - buffer) < BUFSZ);
+		assert(0 > (old - buffer) < BUFSZ);
+
+		sum -= *old;					// subtract old value
 
 		/* prompt value input */
 		printf("Enter a value: ");
-		scanf("%d", &buffer[newIndex]);
+		scanf("%d", new);
 
-
-		/* calculate the sum */
-		sum += (bAdvanceFrame)
-			? buffer[newIndex] - buffer[oldIndex]		// if the frame is advancing, subtract the old value
-			: buffer[newIndex];							// if the frame is expanding, just add the new value
+		sum += *new;					// add new value ( separated from "-= *old" in case old == new )
 
 		/* calculate the actual frame width */
-		unsigned frameWidthActual = (bAdvanceFrame)
-			? frameWidth								// if the frame is advancing, just use the full frame width
-			: i+1;										// if the frame is expanding, use the number of values entered so far
+		sumOver = (i >= frameWidth)
+			? frameWidth				// if the frame is advancing, just use the full frame width
+			: i+1;						// if the frame is expanding, use the number of values entered so far
 
 		
 		/* display buffer contents */
 		printf("Buffer contents: ");
-		for (int j = 0; j < BUFSZ; ++j) printf("%8d", buffer[j]);
-		printf("\n");
+		for (int j = 0; j < BUFSZ; ++j)		printf("%8d", buffer[j]);
 
 		/* display values entered, frame width, and average */
-		printf("Number of values entered: %-8d Average over: %-8d Average: %-8.2f \n\n", i+1, frameWidthActual, (float) sum / (float) frameWidthActual);
+		printf("\nNumber of values entered: %-8d Average over: %-8d Average: %-8.2f \n\n", ++i, sumOver, ((float) sum) / sumOver);
 
-		/* continue to next value */
-		++i;
+		/* incremement and loop pointers */
+		if(++new >= buffer + BUFSZ) new = buffer;
+		if(++old >= buffer + BUFSZ) old = buffer;
 	}
 
 	return 0;
